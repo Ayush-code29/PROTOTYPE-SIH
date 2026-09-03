@@ -1,115 +1,131 @@
-export const logs = [
+export const initialLogs = [
   {
     id: 1,
-    time: "18:40:21",
-    server: "AUTH-SERVER-01",
-    service: "Authentication",
-    severity: "CRITICAL",
-    message: "Multiple failed login attempts detected",
+    time: "18:35:12",
+    server: "server-01",
+    type: "AUTH_SUCCESS",
+    message: "User authentication successful",
+    severity: "INFO",
   },
-
   {
     id: 2,
-    time: "18:39:50",
-    server: "DB-SERVER-02",
-    service: "Database",
-    severity: "ERROR",
-    message: "Database connection timeout",
+    time: "18:35:41",
+    server: "server-02",
+    type: "API_REQUEST",
+    message: "API request completed successfully",
+    severity: "INFO",
   },
-
   {
     id: 3,
-    time: "18:39:30",
-    server: "API-SERVER-01",
-    service: "API Gateway",
+    time: "18:36:03",
+    server: "server-01",
+    type: "AUTH_FAILED",
+    message: "Authentication failed for user",
     severity: "WARNING",
-    message: "Response latency above configured threshold",
   },
-
   {
     id: 4,
-    time: "18:38:49",
-    server: "WEB-SERVER-03",
-    service: "Web Application",
+    time: "18:36:19",
+    server: "server-03",
+    type: "DB_QUERY",
+    message: "Database query executed",
     severity: "INFO",
-    message: "Application started successfully",
   },
-
   {
     id: 5,
-    time: "18:37:05",
-    server: "DB-SERVER-02",
-    service: "Database",
+    time: "18:37:02",
+    server: "server-02",
+    type: "API_ERROR",
+    message: "API request returned HTTP 500",
     severity: "ERROR",
-    message: "Connection pool limit reached",
+  },
+  {
+    id: 6,
+    time: "18:37:45",
+    server: "server-01",
+    type: "AUTH_SUCCESS",
+    message: "User authentication successful",
+    severity: "INFO",
+  },
+  {
+    id: 7,
+    time: "18:38:04",
+    server: "server-04",
+    type: "FIREWALL_EVENT",
+    message: "Inbound connection allowed",
+    severity: "INFO",
+  },
+  {
+    id: 8,
+    time: "18:38:29",
+    server: "server-03",
+    type: "AUTH_FAILED",
+    message: "Authentication failed for user",
+    severity: "WARNING",
   },
 ];
 
-export const incidents = [
-  {
-    id: "INC-1042",
-    title: "Repeated Authentication Failures",
-    server: "AUTH-SERVER-01",
-    severity: "CRITICAL",
-    events: 42,
-    time: "2 min ago",
-  },
-
+export const initialIncidents = [
   {
     id: "INC-1041",
-    title: "Database Connectivity Issue",
-    server: "DB-SERVER-02",
-    severity: "ERROR",
-    events: 16,
-    time: "8 min ago",
+    title: "API Service Degradation",
+    severity: "HIGH",
+    status: "INVESTIGATING",
+    events: 18,
+    servers: 2,
+    risk: 71,
+    time: "18:22:14",
   },
-
   {
-    id: "INC-1040",
-    title: "High API Response Time",
-    server: "API-SERVER-01",
-    severity: "WARNING",
+    id: "INC-1042",
+    title: "Unusual Database Activity",
+    severity: "MEDIUM",
+    status: "OPEN",
     events: 9,
-    time: "15 min ago",
+    servers: 1,
+    risk: 52,
+    time: "18:31:48",
+  },
+];
+
+export const initialAlerts = [
+  {
+    id: "ALT-201",
+    title: "API Error Spike",
+    severity: "HIGH",
+    time: "18:37:02",
+  },
+  {
+    id: "ALT-200",
+    title: "Multiple Failed Authentication",
+    severity: "MEDIUM",
+    time: "18:36:03",
   },
 ];
 
 export const servers = [
   {
-    name: "AUTH-SERVER-01",
-    ip: "10.10.1.12",
-    status: "Online",
-    logs: 12450,
+    name: "server-01",
+    ip: "10.20.10.21",
+    status: "ONLINE",
+    logs: "12.4K",
   },
-
   {
-    name: "DB-SERVER-02",
-    ip: "10.10.1.21",
-    status: "Warning",
-    logs: 8432,
+    name: "server-02",
+    ip: "10.20.10.22",
+    status: "ONLINE",
+    logs: "9.8K",
   },
-
   {
-    name: "WEB-SERVER-03",
-    ip: "10.10.1.33",
-    status: "Online",
-    logs: 6338,
+    name: "server-03",
+    ip: "10.20.10.23",
+    status: "ONLINE",
+    logs: "8.1K",
   },
-
   {
-    name: "API-SERVER-01",
-    ip: "10.10.1.40",
-    status: "Online",
-    logs: 7891,
+    name: "server-04",
+    ip: "10.20.10.24",
+    status: "ONLINE",
+    logs: "8.1K",
   },
-];
-
-export const chartData = [
-  { time: "12 PM", logs: 1200, errors: 42 },
-  { time: "1 PM", logs: 1900, errors: 35 },
-  { time: "2 PM", logs: 1400, errors: 51 },
-  { time: "3 PM", logs: 2300, errors: 62 },
-  { time: "4 PM", logs: 2800, errors: 44 },
-  { time: "5 PM", logs: 3200, errors: 75 },
-  { time: "6 PM", logs: 3600, errors: 89 },
 ];

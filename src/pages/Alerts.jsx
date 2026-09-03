@@ -1,106 +1,46 @@
-import {
-  Bell,
-  Mail,
-  Send,
-} from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 
-const alerts = [
-  {
-    title: "Authentication Failure Spike",
-    server: "AUTH-SERVER-01",
-    severity: "CRITICAL",
-    time: "18:40",
-  },
-
-  {
-    title: "Database Connection Failure",
-    server: "DB-SERVER-02",
-    severity: "ERROR",
-    time: "18:31",
-  },
-
-  {
-    title: "High API Response Time",
-    server: "API-SERVER-01",
-    severity: "WARNING",
-    time: "18:24",
-  },
-];
+import { initialAlerts } from "../data/mockData";
+import SeverityBadge from "../components/SeverityBadge";
 
 export default function Alerts() {
   return (
-    <div>
-      <h1 className="text-2xl font-bold">
-        Alerts & Notifications
-      </h1>
+    <div className="p-8">
+      <div className="mb-7">
+        <p className="text-sm font-medium text-blue-600">
+          SECURITY ALERTS
+        </p>
 
-      <p className="text-sm text-slate-500 mt-1">
-        High-priority events that require administrator attention.
-      </p>
+        <h1 className="mt-1 text-3xl font-bold text-slate-900">
+          Alerts
+        </h1>
 
-      <div className="grid grid-cols-2 gap-5 mt-6">
-        <div className="bg-white border rounded-xl p-5">
-          <div className="flex items-center gap-3">
-            <Mail className="text-blue-600" />
-
-            <div>
-              <h3 className="font-semibold">
-                Email Alerts
-              </h3>
-
-              <p className="text-sm text-slate-500">
-                admin@sarvtra.gov
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white border rounded-xl p-5">
-          <div className="flex items-center gap-3">
-            <Send className="text-blue-500" />
-
-            <div>
-              <h3 className="font-semibold">
-                Telegram Alerts
-              </h3>
-
-              <p className="text-sm text-slate-500">
-                SarvtraAI Admin Bot
-              </p>
-            </div>
-          </div>
-        </div>
+        <p className="mt-1 text-sm text-slate-500">
+          Security alerts requiring attention
+        </p>
       </div>
 
-      <div className="bg-white border rounded-xl mt-6 overflow-hidden">
-        {alerts.map((alert, index) => (
+      <div className="space-y-3">
+        {initialAlerts.map((alert) => (
           <div
-            key={index}
-            className="flex items-center justify-between p-5 border-b last:border-0"
+            key={alert.id}
+            className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
           >
-            <div className="flex gap-4 items-center">
-              <div className="h-10 w-10 bg-red-50 text-red-500 rounded-lg flex items-center justify-center">
-                <Bell size={20} />
-              </div>
-
-              <div>
-                <h3 className="font-semibold">
-                  {alert.title}
-                </h3>
-
-                <p className="text-xs text-slate-500 mt-1">
-                  {alert.server}
-                </p>
-              </div>
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-50 text-red-600">
+              <AlertTriangle size={19} />
             </div>
 
-            <div className="text-right">
-              <span className="text-xs font-semibold text-red-600">
-                {alert.severity}
-              </span>
+            <div className="flex-1">
+              <div className="flex items-center gap-2">
+                <p className="text-sm font-bold text-slate-900">
+                  {alert.title}
+                </p>
 
-              <p className="text-xs text-slate-400 mt-1">
-                {alert.time}
+                <SeverityBadge severity={alert.severity} />
+              </div>
+
+              <p className="mt-1 text-xs text-slate-400">
+                {alert.id} · Detected at {alert.time}
               </p>
             </div>
           </div>

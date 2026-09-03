@@ -1,68 +1,121 @@
 import { useState } from "react";
-import { Search } from "lucide-react";
+import { Search, Activity } from "lucide-react";
 
-import LogTable from "../components/LogTable";
-import { logs } from "../data/mockData";
+import { initialLogs } from "../data/mockData";
+import SeverityBadge from "../components/SeverityBadge";
 
 export default function Logs() {
+  const [logs] = useState(initialLogs);
   const [search, setSearch] = useState("");
-  const [severity, setSeverity] = useState("ALL");
 
   const filteredLogs = logs.filter((log) => {
-    const searchMatch =
-      log.server.toLowerCase().includes(search.toLowerCase()) ||
-      log.message.toLowerCase().includes(search.toLowerCase());
+    const text = `
+      ${log.server}
+      ${log.type}
+      ${log.message}
+      ${log.severity}
+    `.toLowerCase();
 
-    const severityMatch =
-      severity === "ALL" || log.severity === severity;
-
-    return searchMatch && severityMatch;
+    return text.includes(search.toLowerCase());
   });
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold">
-        Live Log Explorer
-      </h1>
+    <div className="p-8">
+      <div className="mb-7">
+        <p className="text-sm font-medium text-blue-600">
+          LOG MANAGEMENT
+        </p>
 
-      <p className="text-sm text-slate-500 mt-1">
-        Search, filter and inspect system logs.
-      </p>
+        <h1 className="mt-1 text-3xl font-bold text-slate-900">
+          Logs
+        </h1>
 
-      <div className="bg-white border border-slate-200 rounded-xl p-4 mt-6 flex gap-4">
-        <div className="relative flex-1">
-          <Search
-            size={18}
-            className="absolute left-3 top-2.5 text-slate-400"
-          />
-
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search server or log message..."
-            className="w-full border border-slate-200 rounded-lg py-2 pl-10 px-4 outline-none"
-          />
-        </div>
-
-        <select
-          value={severity}
-          onChange={(e) => setSeverity(e.target.value)}
-          className="border border-slate-200 rounded-lg px-4"
-        >
-          <option>ALL</option>
-          <option>INFO</option>
-          <option>WARNING</option>
-          <option>ERROR</option>
-          <option>CRITICAL</option>
-        </select>
-
-        <button className="bg-slate-950 text-white rounded-lg px-5">
-          Export Logs
-        </button>
+        <p className="mt-1 text-sm text-slate-500">
+          Centralized security event monitoring
+        </p>
       </div>
 
-      <div className="mt-5">
-        <LogTable logs={filteredLogs} />
+      <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="flex flex-col justify-between gap-4 border-b border-slate-200 p-5 md:flex-row">
+          <div className="flex items-center gap-2">
+            <Activity size={18} className="text-emerald-500" />
+
+            <span className="text-sm font-semibold text-slate-700">
+              Live Log Stream
+            </span>
+          </div>
+
+          <div className="relative">
+            <Search
+              size={16}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+            />
+
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search logs..."
+              className="w-full rounded-xl border border-slate-200 py-2 pl-9 pr-4 text-sm outline-none focus:border-blue-400 md:w-72"
+            />
+          </div>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="border-b border-slate-100 bg-slate-50">
+                <th className="px-5 py-3 text-xs font-bold uppercase text-slate-400">
+                  Time
+                </th>
+
+                <th className="px-5 py-3 text-xs font-bold uppercase text-slate-400">
+                  Server
+                </th>
+
+                <th className="px-5 py-3 text-xs font-bold uppercase text-slate-400">
+                  Event
+                </th>
+
+                <th className="px-5 py-3 text-xs font-bold uppercase text-slate-400">
+                  Message
+                </th>
+
+                <th className="px-5 py-3 text-xs font-bold uppercase text-slate-400">
+                  Severity
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {filteredLogs.map((log) => (
+                <tr
+                  key={log.id}
+                  className="border-b border-slate-50 hover:bg-slate-50"
+                >
+                  <td className="px-5 py-4 font-mono text-xs text-slate-500">
+                    {log.time}
+                  </td>
+
+                  <td className="px-5 py-4 text-sm font-semibold text-slate-700">
+                    {log.server}
+                  </td>
+
+                  <td className="px-5 py-4 text-xs font-bold text-slate-600">
+                    {log.type}
+                  </td>
+
+                  <td className="px-5 py-4 text-sm text-slate-600">
+                    {log.message}
+                  </td>
+
+                  <td className="px-5 py-4">
+                    <SeverityBadge severity={log.severity} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

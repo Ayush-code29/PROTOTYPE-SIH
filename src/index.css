@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   font-family: Inter, Arial, sans-serif;
@@ -7,8 +11,8 @@ body {
   color: #0f172a;
 }
 
-* {
-  box-sizing: border-box;
+button {
+  font-family: inherit;
 }
 
 ::-webkit-scrollbar {
@@ -19,4 +23,8 @@ body {
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f8fafc;
 }

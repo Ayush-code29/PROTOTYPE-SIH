@@ -1,48 +1,37 @@
-import {
-  Search,
-  Bell,
-  UserCircle,
-} from "lucide-react";
+import { Bell, ShieldCheck } from "lucide-react";
 
-export default function Topbar() {
+export default function Topbar({ criticalAlerts }) {
   return (
-    <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 sticky top-0 z-20">
-      <div className="relative w-80">
-        <Search
-          size={18}
-          className="absolute left-3 top-2.5 text-slate-400"
-        />
-
-        <input
-          type="text"
-          placeholder="Search logs, servers, incidents..."
-          className="w-full border border-slate-200 rounded-lg py-2 pl-10 pr-4 text-sm outline-none focus:border-blue-500"
-        />
+    <header className="fixed left-64 right-0 top-0 z-30 flex h-16 items-center justify-between border-b border-slate-200 bg-white px-8">
+      <div>
+        <p className="text-sm font-semibold text-slate-900">
+          Security Operations Center
+        </p>
+        <p className="text-xs text-slate-500">
+          Centralized log monitoring and incident analysis
+        </p>
       </div>
 
-      <div className="flex items-center gap-4">
-        <button className="relative">
-          <Bell size={21} />
-
-          <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] h-4 w-4 flex items-center justify-center rounded-full">
-            3
+      <div className="flex items-center gap-5">
+        <div className="flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5">
+          <ShieldCheck size={15} className="text-emerald-600" />
+          <span className="text-xs font-semibold text-emerald-700">
+            System Secure
           </span>
-        </button>
+        </div>
 
-        <div className="h-7 border-l border-slate-300"></div>
+        <div className="relative">
+          <Bell size={19} className="text-slate-600" />
 
-        <div className="flex items-center gap-2">
-          <UserCircle size={28} />
+          {criticalAlerts > 0 && (
+            <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[9px] font-bold text-white">
+              {criticalAlerts}
+            </span>
+          )}
+        </div>
 
-          <div>
-            <p className="text-sm font-semibold">
-              Administrator
-            </p>
-
-            <p className="text-xs text-slate-500">
-              System Admin
-            </p>
-          </div>
+        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 text-xs font-bold text-white">
+          SA
         </div>
       </div>
     </header>

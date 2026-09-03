@@ -1,97 +1,96 @@
-import { NavLink } from "react-router-dom";
-
 import {
   LayoutDashboard,
-  ScrollText,
-  TriangleAlert,
-  BrainCircuit,
+  FileText,
+  AlertTriangle,
+  Brain,
   Server,
-  Bell,
-  ShieldCheck,
 } from "lucide-react";
 
-const links = [
+import { NavLink } from "react-router-dom";
+
+const navigation = [
   {
     name: "Dashboard",
     path: "/",
     icon: LayoutDashboard,
   },
   {
-    name: "Live Logs",
+    name: "Logs",
     path: "/logs",
-    icon: ScrollText,
+    icon: FileText,
   },
   {
     name: "Incidents",
     path: "/incidents",
-    icon: TriangleAlert,
+    icon: AlertTriangle,
   },
   {
     name: "AI Insights",
     path: "/ai-insights",
-    icon: BrainCircuit,
+    icon: Brain,
   },
   {
     name: "Servers",
     path: "/servers",
     icon: Server,
   },
-  {
-    name: "Alerts",
-    path: "/alerts",
-    icon: Bell,
-  },
 ];
 
 export default function Sidebar() {
   return (
-    <aside className="fixed left-0 top-0 h-screen w-64 bg-slate-950 text-white p-5">
-      <div className="flex items-center gap-3 mb-8">
-        <div className="h-11 w-11 bg-blue-600 rounded-xl flex items-center justify-center">
-          <ShieldCheck size={25} />
-        </div>
-
+    <aside className="fixed left-0 top-0 z-40 flex h-screen w-64 flex-col border-r border-slate-200 bg-white">
+      <div className="flex h-16 items-center border-b border-slate-200 px-6">
         <div>
-          <h1 className="font-bold text-xl">SarvtraAI</h1>
-          <p className="text-xs text-slate-400">
-            Intelligent Log Monitoring
+          <h1 className="text-xl font-bold text-slate-900">
+            Sarvtra<span className="text-blue-600">AI</span>
+          </h1>
+          <p className="text-[10px] font-medium tracking-wider text-slate-400">
+            INTELLIGENT LOG SECURITY
           </p>
         </div>
       </div>
 
-      <nav className="space-y-2">
-        {links.map(({ name, path, icon: Icon }) => (
-          <NavLink
-            key={name}
-            to={path}
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-3 rounded-lg transition ${
-                isActive
-                  ? "bg-blue-600 text-white"
-                  : "text-slate-400 hover:bg-slate-900 hover:text-white"
-              }`
-            }
-          >
-            <Icon size={19} />
-
-            <span className="text-sm font-medium">
-              {name}
-            </span>
-          </NavLink>
-        ))}
-      </nav>
-
-      <div className="absolute bottom-6 left-5 right-5 bg-slate-900 rounded-xl p-4">
-        <p className="text-xs text-slate-400">
-          System Status
+      <div className="px-4 py-6">
+        <p className="mb-3 px-3 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+          Monitoring
         </p>
 
-        <div className="flex items-center gap-2 mt-2">
-          <span className="h-2.5 w-2.5 bg-green-500 rounded-full"></span>
+        <nav className="space-y-1">
+          {navigation.map((item) => {
+            const Icon = item.icon;
 
-          <span className="text-sm font-semibold">
-            All Systems Operational
-          </span>
+            return (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
+                    isActive
+                      ? "bg-blue-50 text-blue-700"
+                      : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                  }`
+                }
+              >
+                <Icon size={18} />
+                {item.name}
+              </NavLink>
+            );
+          })}
+        </nav>
+      </div>
+
+      <div className="mt-auto border-t border-slate-200 p-4">
+        <div className="rounded-xl bg-slate-50 p-3">
+          <div className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-emerald-500" />
+            <span className="text-xs font-semibold text-slate-700">
+              Monitoring Active
+            </span>
+          </div>
+
+          <p className="mt-1 text-[11px] text-slate-500">
+            Prototype environment
+          </p>
         </div>
       </div>
     </aside>

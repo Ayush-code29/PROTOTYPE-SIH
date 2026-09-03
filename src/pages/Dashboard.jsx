@@ -1,160 +1,411 @@
+import { useEffect, useRef, useState } from "react";
 import {
+  AlertTriangle,
+  FileText,
   Server,
-  ScrollText,
-  TriangleAlert,
   ShieldAlert,
+  Activity,
 } from "lucide-react";
 
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
-} from "recharts";
-
 import StatCard from "../components/StatCard";
-import LogTable from "../components/LogTable";
+import SimulationPanel from "../components/SimulationPanel";
+import IncidentModal from "../components/IncidentModal";
+import PIIMaskingDemo from "../components/PIIMaskingDemo";
+import SeverityBadge from "../components/SeverityBadge";
 
 import {
-  logs,
-  chartData,
+  initialAlerts,
+  initialIncidents,
+  initialLogs,
 } from "../data/mockData";
 
 export default function Dashboard() {
+  const [logs, setLogs] = useState(initialLogs);
+  const [incidents, setIncidents] = useState(initialIncidents);
+  const [alerts, setAlerts] = useState(initialAlerts);
+
+  const [logsToday, setLogsToday] = useState(38421);
+  const [simulationRunning, setSimulationRunning] = useState(false);
+  const [simulationStep, setSimulationStep] = useState(0);
+
+  const [simulatedIncident, setSimulatedIncident] = useState(null);
+  const [selectedIncident, setSelectedIncident] = useState(null);
+
+  const timers = useRef([]);
+
+  const clearTimers = () => {
+    timers.current.forEach(clearTimeout);
+    timers.current = [];
+  };
+
+  useEffect(() => {
+    return () => clearTimers();
+  }, []);
+
+  const resetDemo = () => {
+    clearTimers();
+
+    setLogs(initialLogs);
+    setIncidents(initialIncidents);
+    setAlerts(initialAlerts);
+    setLogsToday(38421);
+    setSimulationRunning(false);
+    setSimulationStep(0);
+    setSimulatedIncident(null);
+  };
+
+  const simulateIncident = () => {
+    if (simulationRunning) return;
+
+    clearTimers();
+
+    setSimulationRunning(true);
+    setSimulationStep(0);
+    setSimulatedIncident(null);
+
+    const suspiciousLogs = [
+      {
+        id: Date.now() + 1,
+        time: "18:39:10",
+        server: "server-01",
+        type: "AUTH_FAILED",
+        message: "Repeated authentication failure detected",
+        severity: "WARNING",
+      },
+      {
+        id: Date.now() + 2,
+        time: "18:39:14",
+        server: "server-01",
+        type: "AUTH_FAILED",
+        message: "Repeated authentication failure detected",
+        severity: "WARNING",
+      },
+      {
+        id: Date.now() + 3,
+        time: "18:39:18",
+        server: "server-02",
+        type: "AUTH_FAILED",
+        message: "Repeated authentication failure detected",
+        severity: "WARNING",
+      },
+      {
+        id: Date.now() + 4,
+        time: "18:39:21",
+        server: "server-03",
+        type: "AUTH_FAILED",
+        message: "Repeated authentication failure detected",
+        severity: "WARNING",
+      },
+      {
+        id: Date.now() + 5,
+        time: "18:39:24",
+        server: "server-01",
+        type: "AUTH_SPIKE",
+        message: "Authentication failure threshold exceeded",
+        severity: "ERROR",
+      },
+      {
+        id: Date.now() + 6,
+        time: "18:39:31",
+        server: "server-03",
+        type: "SUSPICIOUS_PATTERN",
+        message: "Correlated authentication anomaly detected",
+        severity: "CRITICAL",
+      },
+    ];
+
+    // STEP 1
+    timers.current.push(
+      setTimeout(() => {
+        setSimulationStep(1);
+
+        setLogs((current) => [
+          ...suspiciousLogs.slice(0, 3),
+          ...current,
+        ]);
+
+        setLogsToday((value) => value + 12);
+      }, 800)
+    );
+
+    // STEP 2
+    timers.current.push(
+      setTimeout(() => {
+        setSimulationStep(2);
+
+        setLogs((current) => [
+          ...suspiciousLogs.slice(3, 5),
+          ...current,
+        ]);
+      }, 2200)
+    );
+
+    // STEP 3
+    timers.current.push(
+      setTimeout(() => {
+        setSimulationStep(3);
+
+        setLogs((current) => [
+          suspiciousLogs[5],
+          ...current,
+        ]);
+      }, 3600)
+    );
+
+    // STEP 4
+    timers.current.push(
+      setTimeout(() => {
+        setSimulationStep(4);
+      }, 5000)
+    );
+
+    // STEP 5
+    timers.current.push(
+      setTimeout(() => {
+        setSimulationStep(5);
+
+        const newIncident = {
+          id: "INC-1043",
+          title: "Suspicious Authentication Activity",
+          severity: "CRITICAL",
+          status: "OPEN",
+          events: 42,
+          servers: 4,
+          risk: 87,
+          time: "18:39:35",
+        };
+
+        setSimulatedIncident(newIncident);
+
+        setIncidents((current) => [
+          newIncident,
+          ...current,
+        ]);
+
+        setAlerts((current) => [
+          {
+            id: "ALT-202",
+            title: "Critical Authentication Anomaly",
+            severity: "CRITICAL",
+            time: "18:39:35",
+          },
+          ...current,
+        ]);
+      }, 6200)
+    );
+
+    // STEP 6
+    timers.current.push(
+      setTimeout(() => {
+        setSimulationStep(6);
+      }, 7600)
+    );
+
+    // COMPLETE
+    timers.current.push(
+      setTimeout(() => {
+        setSimulationRunning(false);
+      }, 8200)
+    );
+  };
+
+  const criticalAlerts = alerts.filter(
+    (alert) => alert.severity === "CRITICAL"
+  ).length;
+
   return (
-    <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold">
-          Security Overview
-        </h1>
+    <>
+      <div className="p-8">
+        <div className="mb-7 flex flex-col justify-between gap-4 md:flex-row md:items-center">
+          <div>
+            <p className="text-sm font-medium text-blue-600">
+              SECURITY OVERVIEW
+            </p>
 
-        <p className="text-sm text-slate-500 mt-1">
-          Real-time monitoring of connected systems and logs.
-        </p>
-      </div>
+            <h1 className="mt-1 text-3xl font-bold text-slate-900">
+              Dashboard
+            </h1>
 
-      <div className="grid grid-cols-4 gap-4">
-        <StatCard
-          title="Connected Servers"
-          value="12"
-          subtitle="11 healthy, 1 warning"
-          icon={Server}
-          iconClass="bg-blue-100 text-blue-600"
-        />
+            <p className="mt-1 text-sm text-slate-500">
+              Real-time security monitoring and intelligent log analysis
+            </p>
+          </div>
 
-        <StatCard
-          title="Logs Today"
-          value="38.4K"
-          subtitle="Across all connected sources"
-          icon={ScrollText}
-          iconClass="bg-purple-100 text-purple-600"
-        />
+          <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5">
+            <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
 
-        <StatCard
-          title="Active Incidents"
-          value="7"
-          subtitle="3 require attention"
-          icon={TriangleAlert}
-          iconClass="bg-yellow-100 text-yellow-600"
-        />
-
-        <StatCard
-          title="Critical Alerts"
-          value="3"
-          subtitle="Immediate investigation required"
-          icon={ShieldAlert}
-          iconClass="bg-red-100 text-red-600"
-        />
-      </div>
-
-      <div className="grid grid-cols-3 gap-5 mt-6">
-        <div className="col-span-2 bg-white border border-slate-200 rounded-xl p-5">
-          <h2 className="font-semibold text-lg">
-            Log Activity
-          </h2>
-
-          <p className="text-xs text-slate-500 mt-1 mb-5">
-            Log volume during the last few hours
-          </p>
-
-          <div className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-
-                <XAxis dataKey="time" />
-
-                <YAxis />
-
-                <Tooltip />
-
-                <Line
-                  dataKey="logs"
-                  stroke="#2563eb"
-                  strokeWidth={3}
-                  dot={false}
-                />
-
-                <Line
-                  dataKey="errors"
-                  stroke="#ef4444"
-                  strokeWidth={2}
-                  dot={false}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+            <span className="text-xs font-semibold text-slate-600">
+              LIVE MONITORING
+            </span>
           </div>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-xl p-5">
-          <h2 className="font-semibold text-lg">
-            Latest AI Insight
-          </h2>
+        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+          <StatCard
+            title="Logs Today"
+            value={logsToday.toLocaleString()}
+            subtitle="Events processed"
+            icon={<FileText size={19} />}
+          />
 
-          <div className="mt-4 bg-blue-50 rounded-xl p-4 border border-blue-100">
-            <p className="font-semibold text-sm text-blue-700">
-              Database Connectivity Issue
-            </p>
+          <StatCard
+            title="Active Incidents"
+            value={incidents.length}
+            subtitle="Requires attention"
+            danger={incidents.some(
+              (item) => item.severity === "CRITICAL"
+            )}
+            icon={<ShieldAlert size={19} />}
+          />
 
-            <p className="text-sm mt-3 leading-6 text-slate-700">
-              Multiple database timeout events occurred alongside
-              connection pool warnings.
-            </p>
+          <StatCard
+            title="Critical Alerts"
+            value={criticalAlerts}
+            subtitle="Priority alerts"
+            danger={criticalAlerts > 0}
+            icon={<AlertTriangle size={19} />}
+          />
 
-            <div className="mt-4">
-              <p className="text-xs uppercase text-slate-500 font-semibold">
-                Probable Cause
-              </p>
+          <StatCard
+            title="Servers"
+            value="4"
+            subtitle="All systems operational"
+            icon={<Server size={19} />}
+          />
+        </div>
 
-              <p className="text-sm mt-1">
-                Connection pool exhaustion may be affecting API
-                requests.
-              </p>
+        <div className="mt-6">
+          <SimulationPanel
+            running={simulationRunning}
+            step={simulationStep}
+            incident={simulatedIncident}
+            onSimulate={simulateIncident}
+            onReset={resetDemo}
+            onInvestigate={() =>
+              setSelectedIncident(simulatedIncident)
+            }
+          />
+        </div>
+
+        <div className="mt-6 grid gap-6 lg:grid-cols-2">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="font-bold text-slate-900">
+                  Recent Incidents
+                </h2>
+                <p className="text-xs text-slate-500">
+                  Latest detected security events
+                </p>
+              </div>
+
+              <ShieldAlert size={18} className="text-slate-400" />
+            </div>
+
+            <div className="mt-5 space-y-3">
+              {incidents.slice(0, 4).map((incident) => (
+                <button
+                  key={incident.id}
+                  onClick={() => setSelectedIncident(incident)}
+                  className="flex w-full items-center justify-between rounded-xl border border-slate-100 p-4 text-left transition hover:border-blue-200 hover:bg-blue-50/30"
+                >
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-slate-400">
+                        {incident.id}
+                      </span>
+
+                      <SeverityBadge
+                        severity={incident.severity}
+                      />
+                    </div>
+
+                    <p className="mt-2 text-sm font-semibold text-slate-800">
+                      {incident.title}
+                    </p>
+
+                    <p className="mt-1 text-xs text-slate-500">
+                      {incident.events} events · {incident.servers}{" "}
+                      servers
+                    </p>
+                  </div>
+
+                  <span className="text-xs text-slate-400">
+                    {incident.time}
+                  </span>
+                </button>
+              ))}
             </div>
           </div>
 
-          <button className="mt-4 w-full bg-slate-950 text-white py-2.5 rounded-lg text-sm font-medium">
-            View Full Analysis
-          </button>
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="font-bold text-slate-900">
+                  Live Activity
+                </h2>
+
+                <p className="text-xs text-slate-500">
+                  Latest system events
+                </p>
+              </div>
+
+              <Activity size={18} className="text-emerald-500" />
+            </div>
+
+            <div className="mt-5 space-y-3">
+              {logs.slice(0, 7).map((log) => (
+                <div
+                  key={log.id}
+                  className="flex items-center gap-3 rounded-xl bg-slate-50 p-3"
+                >
+                  <span
+                    className={`h-2 w-2 rounded-full ${
+                      log.severity === "CRITICAL"
+                        ? "bg-red-600"
+                        : log.severity === "ERROR"
+                        ? "bg-orange-500"
+                        : log.severity === "WARNING"
+                        ? "bg-amber-500"
+                        : "bg-emerald-500"
+                    }`}
+                  />
+
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-xs font-semibold text-slate-800">
+                      {log.message}
+                    </p>
+
+                    <p className="text-[11px] text-slate-400">
+                      {log.server} · {log.time}
+                    </p>
+                  </div>
+
+                  <SeverityBadge severity={log.severity} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-6">
+          <PIIMaskingDemo />
+        </div>
+
+        <div className="mt-5 text-center">
+          <p className="text-[11px] text-slate-400">
+            SarvtraAI frontend prototype · Simulation data is for
+            demonstration purposes
+          </p>
         </div>
       </div>
 
-      <div className="mt-6">
-        <div className="flex justify-between mb-3">
-          <h2 className="font-semibold text-lg">
-            Recent Logs
-          </h2>
-
-          <button className="text-blue-600 text-sm">
-            View all
-          </button>
-        </div>
-
-        <LogTable logs={logs.slice(0, 4)} />
-      </div>
-    </div>
+      {selectedIncident && (
+        <IncidentModal
+          incident={selectedIncident}
+          onClose={() => setSelectedIncident(null)}
+        />
+      )}
+    </>
   );
 }

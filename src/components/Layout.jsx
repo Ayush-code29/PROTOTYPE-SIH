@@ -4,16 +4,13 @@ import Topbar from "./Topbar";
 
 export default function Layout() {
   return (
-    <div className="flex min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50">
       <Sidebar />
+      <Topbar criticalAlerts={0} />
 
-      <div className="flex-1 ml-64">
-        <Topbar />
-
-        <main className="p-6">
-          <Outlet />
-        </main>
-      </div>
+      <main className="ml-64 pt-16">
+        <Outlet />
+      </main>
     </div>
   );
 }
